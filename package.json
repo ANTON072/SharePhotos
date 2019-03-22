@@ -1,0 +1,44 @@
+{
+  "name": "SharePhotos",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ANTON072/SharePhotos.git",
+  "author": "Katsushi OUGI <bdbkx286@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "firebase": "^5.9.1",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-router-dom": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@types/react": "^16.8.8",
+    "@types/react-dom": "^16.8.3",
+    "@types/react-router-dom": "^4.3.1",
+    "babel-loader": "^8.0.5",
+    "clean-webpack-plugin": "^2.0.1",
+    "firebase-tools": "^6.5.0",
+    "fork-ts-checker-webpack-plugin": "^1.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.16.4",
+    "superstatic": "^6.0.4",
+    "thread-loader": "^2.1.2",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.4000",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
+  },
+  "scripts": {
+    "start": "run-p start:*",
+    "start:webpack": "webpack-dev-server",
+    "start:firebase": "firebase serve",
+    "build:webpack": "NODE_ENV=production webpack",
+    "lint": "tslint src/**.ts src/**.tsx"
+  }
+}
