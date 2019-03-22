@@ -2,13 +2,11 @@ const path = require("path")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const CleanWebpackPlugin = require("clean-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const Dotenv = require("dotenv-webpack")
 
 const ENV = process.env.NODE_ENV || "development"
 const isProd = ENV !== "development"
 const output = "public"
-const firebaseConfig = require("firebase-tools/lib/config").load({
-  cwd: process.cwd()
-})
 
 module.exports = {
   mode: ENV,
@@ -27,6 +25,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
+    new Dotenv(),
     new HtmlWebpackPlugin({
       template: "src/index.html",
       filename: "index.html"
@@ -83,9 +82,6 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     contentBase: "public",
-    open: true,
-    before(app) {
-      app.use(require("superstatic")({ config: firebaseConfig.data.hosting }))
-    }
+    open: true
   }
 }

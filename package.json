@@ -19,10 +19,9 @@
     "@types/react-router-dom": "^4.3.1",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^2.0.1",
-    "firebase-tools": "^6.5.0",
+    "dotenv-webpack": "^1.7.0",
     "fork-ts-checker-webpack-plugin": "^1.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "npm-run-all": "^4.1.5",
     "prettier": "^1.16.4",
     "superstatic": "^6.0.4",
     "thread-loader": "^2.1.2",
@@ -35,10 +34,8 @@
     "webpack-dev-server": "^3.2.1"
   },
   "scripts": {
-    "start": "run-p start:*",
-    "start:webpack": "webpack-dev-server",
-    "start:firebase": "firebase serve",
-    "build:webpack": "NODE_ENV=production webpack",
+    "start": "webpack-dev-server",
+    "build": "NODE_ENV=production webpack",
     "lint": "tslint src/**.ts src/**.tsx"
   }
 }
