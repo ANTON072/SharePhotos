@@ -1,5 +1,7 @@
 import React, { Fragment } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
+import { Typography, Button } from "@material-ui/core"
+import Icon from "@material-ui/core/Icon"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -7,7 +9,7 @@ const styles = ({ spacing }: Theme) =>
       width: "100%",
       maxWidth: "750px",
       margin: "0 auto",
-      padding: `0 ${spacing.unit * 2}px`
+      padding: `${spacing.unit * 2}px`
     }
   })
 
@@ -23,7 +25,20 @@ const UserApp: React.FC<Props> = props => {
   return (
     <Fragment>
       <div className={classes.root}>
-        <h1>Hello World</h1>
+        <Typography component="h1" variant="headline" gutterBottom>
+          Share Photos
+        </Typography>
+        <Button
+          component="label"
+          size="large"
+          color="primary"
+          variant="outlined"
+          fullWidth
+        >
+          <Icon>camera_alt</Icon>
+          UPLOAD PHOTOS
+          <input type="file" style={{ display: "none" }} />
+        </Button>
       </div>
     </Fragment>
   )
