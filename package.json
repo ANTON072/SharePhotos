@@ -23,6 +23,7 @@
     "dotenv-webpack": "^1.7.0",
     "fork-ts-checker-webpack-plugin": "^1.0.0",
     "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.5.0",
     "ngrock-webpack-plugin": "^0.0.2",
     "prettier": "^1.16.4",
     "superstatic": "^6.0.4",
