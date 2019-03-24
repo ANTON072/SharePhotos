@@ -3,6 +3,7 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
 const CleanWebpackPlugin = require("clean-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const Dotenv = require("dotenv-webpack")
+const NgrockWebpackPlugin = require("ngrock-webpack-plugin")
 
 const ENV = process.env.NODE_ENV || "development"
 const isProd = ENV !== "development"
@@ -32,7 +33,7 @@ module.exports = {
     }),
     // 型エラーのみを検知する
     new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true })
-  ],
+  ].concat(isProd ? [] : [new NgrockWebpackPlugin()]),
   module: {
     rules: [
       {
@@ -80,6 +81,9 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js", ".jsx", ".css"]
   },
   devServer: {
+    hot: true,
+    inline: true,
+    headers: { "Access-Control-Allow-Origin": "*" },
     historyApiFallback: true,
     contentBase: "public",
     open: true
