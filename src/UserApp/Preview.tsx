@@ -49,7 +49,15 @@ const Preview: React.FC<Props> = props => {
         <Grid item xs={12}>
           <div className={classes.wrapper}>
             <div className={classes.wrapperInner}>
-              {!!previewSrc && <img src={previewSrc} alt="" />}
+              {!!previewSrc && (
+                <img
+                  src={previewSrc}
+                  onLoad={() => {
+                    window.URL.revokeObjectURL(previewSrc)
+                  }}
+                  alt=""
+                />
+              )}
             </div>
           </div>
         </Grid>
