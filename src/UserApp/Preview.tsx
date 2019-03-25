@@ -9,10 +9,11 @@ interface Props {
     wrapperInner: string
   }
   onCancel: () => void
+  onImgLoaded: () => void
   previewSrc: string
 }
 
-const styles = ({ spacing }: Theme) =>
+const styles = ({ spacing, palette }: Theme) =>
   createStyles({
     root: {
       margin: `${spacing.unit * 4}px 0`
@@ -41,7 +42,7 @@ const styles = ({ spacing }: Theme) =>
   })
 
 const Preview: React.FC<Props> = props => {
-  const { classes, previewSrc, onCancel } = props
+  const { classes, previewSrc, onCancel, onImgLoaded } = props
 
   return (
     <div className={classes.root}>
@@ -49,7 +50,9 @@ const Preview: React.FC<Props> = props => {
         <Grid item xs={12}>
           <div className={classes.wrapper}>
             <div className={classes.wrapperInner}>
-              {!!previewSrc && <img src={previewSrc} alt="" />}
+              {!!previewSrc && (
+                <img src={previewSrc} onLoad={onImgLoaded} alt="" />
+              )}
             </div>
           </div>
         </Grid>
