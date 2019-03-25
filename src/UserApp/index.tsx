@@ -83,6 +83,13 @@ const UserApp: React.FC<Props> = props => {
   const [loading, setLoading] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 
+  function onImgLoaded() {
+    if (previewSrc) {
+      window.URL.revokeObjectURL(previewSrc)
+      setLoading(false)
+    }
+  }
+
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target || !e.target.files) {
       return
@@ -97,7 +104,6 @@ const UserApp: React.FC<Props> = props => {
         // 変換不要
         const data = arrayBufferToDataURL(result)
         setPreviewSrc(data)
-        setLoading(false)
       } else {
         const img = new Image()
         img.src = arrayBufferToDataURL(result)
@@ -106,9 +112,7 @@ const UserApp: React.FC<Props> = props => {
           if (!canvas) {
             return reader.abort()
           }
-          window.URL.revokeObjectURL(img.src)
           setPreviewSrc(canvas.toDataURL("image/jpeg"))
-          setLoading(false)
         }
       }
     }
@@ -134,6 +138,7 @@ const UserApp: React.FC<Props> = props => {
         {!!previewSrc && (
           <Preview
             previewSrc={previewSrc}
+            onImgLoaded={onImgLoaded}
             onCancel={() => {
               setPreviewSrc(null)
             }}

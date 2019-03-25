@@ -1,5 +1,5 @@
 // https://qiita.com/zaru/items/0ce7757c721ebd170683
-export default function getOrientation(buffer: ArrayBuffer | string | null) {
+export default function getOrientation(buffer: ArrayBuffer) {
   const dv = new DataView(buffer)
   let app1MarkerStart = 2
   // もし JFIF で APP0 Marker がある場合は APP1 Marker の取得位置をずらす
