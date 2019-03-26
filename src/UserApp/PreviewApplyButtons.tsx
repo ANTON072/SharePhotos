@@ -13,10 +13,11 @@ interface Props {
   classes: {
     root: string
   }
+  onCancel: () => void
 }
 
 const PreviewApplyButtons: React.FC<Props> = props => {
-  const { classes } = props
+  const { classes, onCancel } = props
 
   return (
     <div className={classes.root}>
@@ -27,7 +28,7 @@ const PreviewApplyButtons: React.FC<Props> = props => {
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button variant="contained" fullWidth>
+          <Button variant="contained" onClick={onCancel} fullWidth>
             Cancel
           </Button>
         </Grid>

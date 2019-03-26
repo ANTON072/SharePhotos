@@ -1,6 +1,6 @@
 import React from "react"
 import { withStyles, createStyles } from "@material-ui/core/styles"
-import { CircularProgress } from "@material-ui/core"
+import ReactLoading from "react-loading"
 
 const styles = () =>
   createStyles({
@@ -21,18 +21,14 @@ interface Props {
   classes: {
     root: string
   }
-  loading: boolean
 }
 
 const PhotoLoading: React.FC<Props> = props => {
-  const { classes, loading } = props
+  const { classes } = props
 
-  if (!loading) {
-    return <React.Fragment />
-  }
   return (
     <div className={classes.root}>
-      <CircularProgress color="secondary" />
+      <ReactLoading color="#e91e63" type="spin" />
     </div>
   )
 }

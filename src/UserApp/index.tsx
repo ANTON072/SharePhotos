@@ -143,18 +143,6 @@ const UserApp: React.FC<Props> = props => {
           </Tabs>
         </AppBar>
         <UploadView />
-        {/* {!!!previewSrc && (
-          <UploadButton onChangeFile={handleChangeFile} loading={loading} />
-        )}
-        {!!previewSrc && (
-          <Preview
-            previewSrc={previewSrc}
-            onImgLoaded={onImgLoaded}
-            onCancel={() => {
-              setPreviewSrc(null)
-            }}
-          />
-        )} */}
       </div>
     </Fragment>
   )

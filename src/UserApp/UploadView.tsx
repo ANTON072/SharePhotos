@@ -5,6 +5,7 @@ import createTransformedCanvas from "../helpers/createTransformedCanvas"
 import TakePhoto from "./TakePhoto"
 import PhotoLoading from "./PhotoLoading"
 import PreviewApplyButtons from "./PreviewApplyButtons"
+import ReactLoading from "react-loading"
 
 const styles = ({ spacing, palette }: Theme) => {
   return createStyles({
@@ -56,17 +57,15 @@ const UploadView: React.FC<Props> = props => {
   const { classes } = props
 
   const [loading, setLoading] = useState(false)
-  const [selectedPhoto, setSelectedPhoto] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target || !e.target.files) {
       return
     }
-    setSelectedPhoto(true)
-    setLoading(true)
     const file = e.target.files[0]
     const reader = new FileReader()
+    setLoading(true)
     reader.onload = () => {
       const result = reader.result as ArrayBuffer
       const orientaiton = getOrientation(result)
@@ -82,8 +81,11 @@ const UploadView: React.FC<Props> = props => {
           if (!canvas) {
             return reader.abort()
           }
-          const newImg = canvas.toDataURL("image/jpeg")
-          setPreviewSrc(newImg)
+          console.log("start", new Date())
+          setTimeout(() => {
+            const newImg = canvas.toDataURL("image/jpeg")
+            setPreviewSrc(newImg)
+          }, 0)
         }
       }
     }
@@ -91,8 +93,6 @@ const UploadView: React.FC<Props> = props => {
       reader.abort()
     }
     reader.onabort = () => {
-      setLoading(false)
-      setSelectedPhoto(false)
       console.error("ファイルの読み込みに失敗しました")
     }
     reader.readAsArrayBuffer(file)
@@ -101,17 +101,28 @@ const UploadView: React.FC<Props> = props => {
   return (
     <div className={classes.root}>
       <div className={classes.photo}>
-        {!selectedPhoto && <TakePhoto onChangeFile={handleChangeFile} />}
+        {!!!previewSrc && <TakePhoto onChangeFile={handleChangeFile} />}
         {!!previewSrc && (
           <img
             className={classes.previewImg}
             src={previewSrc}
-            onLoad={() => setLoading(false)}
+            onLoad={() => {
+              console.log("loaded", new Date())
+              setLoading(false)
+            }}
           />
         )}
-        <PhotoLoading loading={loading} />
+        {loading && <PhotoLoading />}
       </div>
-      <PreviewApplyButtons />
+      {loading && <PhotoLoading />}
+      {!!previewSrc && (
+        <PreviewApplyButtons
+          onCancel={() => {
+            setPreviewSrc(null)
+          }}
+        />
+      )}
+      <ReactLoading color="#e91e63" type="spin" />
     </div>
   )
 }
