@@ -53,11 +53,21 @@ const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
   return window.URL.createObjectURL(blob)
 }
 
+const worker: Worker = new Worker("/worker.js")
+
 const UploadView: React.FC<Props> = props => {
   const { classes } = props
 
   const [loading, setLoading] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  if (!mounted) {
+    worker.onmessage = e => {
+      console.info(e.data)
+    }
+    setMounted(true)
+  }
 
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target || !e.target.files) {
@@ -81,11 +91,12 @@ const UploadView: React.FC<Props> = props => {
           if (!canvas) {
             return reader.abort()
           }
-          console.log("start", new Date())
-          setTimeout(() => {
-            const newImg = canvas.toDataURL("image/jpeg")
-            setPreviewSrc(newImg)
-          }, 0)
+          // workerに通知
+          worker.postMessage(
+            JSON.stringify({ evt: "doTransformToJpeg", canvas })
+          )
+          const newImg = canvas.toDataURL("image/jpeg")
+          setPreviewSrc(newImg)
         }
       }
     }
@@ -107,7 +118,6 @@ const UploadView: React.FC<Props> = props => {
             className={classes.previewImg}
             src={previewSrc}
             onLoad={() => {
-              console.log("loaded", new Date())
               setLoading(false)
             }}
           />
