@@ -72,5 +72,4 @@ node_modules/
 !.vscode/extensions.json
 
 # Misc
-/public/
-/public/worker.js
+/public

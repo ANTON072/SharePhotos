@@ -53,7 +53,7 @@ const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
   return window.URL.createObjectURL(blob)
 }
 
-const worker: Worker = new Worker("/worker.js")
+// const worker: Worker = new Worker("/worker.js")
 
 const UploadView: React.FC<Props> = props => {
   const { classes } = props
@@ -63,9 +63,9 @@ const UploadView: React.FC<Props> = props => {
   const [mounted, setMounted] = useState(false)
 
   if (!mounted) {
-    worker.onmessage = e => {
-      console.info(e.data)
-    }
+    // worker.onmessage = e => {
+    //   console.info(e.data)
+    // }
     setMounted(true)
   }
 
@@ -92,9 +92,9 @@ const UploadView: React.FC<Props> = props => {
             return reader.abort()
           }
           // workerに通知
-          worker.postMessage(
-            JSON.stringify({ evt: "doTransformToJpeg", canvas })
-          )
+          // worker.postMessage(
+          //   JSON.stringify({ evt: "doTransformToJpeg", canvas })
+          // )
           const newImg = canvas.toDataURL("image/jpeg")
           setPreviewSrc(newImg)
         }
@@ -132,7 +132,6 @@ const UploadView: React.FC<Props> = props => {
           }}
         />
       )}
-      <ReactLoading color="#e91e63" type="spin" />
     </div>
   )
 }

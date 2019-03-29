@@ -81,7 +81,6 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js", ".jsx", ".css"]
   },
   devServer: {
-    hot: true,
     inline: true,
     headers: { "Access-Control-Allow-Origin": "*" },
     historyApiFallback: true,

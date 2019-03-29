@@ -6,7 +6,10 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2015"
+    "target": "es2015",
+    "lib": [
+      "webworker"
+    ]
   },
   "compileOnSave": true,
   "include": [
