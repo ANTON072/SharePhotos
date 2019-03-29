@@ -14,15 +14,9 @@ module.exports = {
   entry: ["./src/index.tsx"],
   output: {
     filename: "[name].[hash].js",
-    chunkFilename: "[id].[hash].js",
+    chunkFilename: "[name]-chunk.[hash].js",
     publicPath: "/",
     path: path.resolve(__dirname, output)
-  },
-  optimization: {
-    splitChunks: {
-      name: "vendor",
-      chunks: "initial"
-    }
   },
   plugins: [
     new CleanWebpackPlugin(),
