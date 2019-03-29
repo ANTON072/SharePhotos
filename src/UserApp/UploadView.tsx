@@ -5,6 +5,7 @@ import createTransformedCanvas from "../helpers/createTransformedCanvas"
 import TakePhoto from "./TakePhoto"
 import PhotoLoading from "./PhotoLoading"
 import PreviewApplyButtons from "./PreviewApplyButtons"
+import Worker from "worker-loader!../Worker"
 import ReactLoading from "react-loading"
 
 const styles = ({ spacing, palette }: Theme) => {
@@ -53,7 +54,36 @@ const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
   return window.URL.createObjectURL(blob)
 }
 
-// const worker: Worker = new Worker("/worker.js")
+const generateImg = (reader: FileReader) => {
+  return new Promise<string>((resolve, reject) => {
+    const result = reader.result as ArrayBuffer
+    const orientaiton = getOrientation(result)
+    if (orientaiton === 0 || orientaiton === 1) {
+      // 変換不要
+      resolve(arrayBufferToDataURL(result))
+    } else {
+      const img = new Image()
+      img.src = arrayBufferToDataURL(result)
+      img.onload = () => {
+        const canvas = createTransformedCanvas(orientaiton, img)
+        if (!canvas) {
+          return reader.abort()
+        }
+        // workerに通知
+        const dataUrl = canvas.toDataURL("image/jpeg")
+        resolve(dataUrl)
+      }
+      img.onerror = () => {
+        reject()
+      }
+    }
+  })
+}
+
+const worker = new Worker()
+// const canvas = document.createElement("canvas") as any
+// const offscreen = canvas.transferControlToOffscreen()
+// worker.postMessage({ canvas: offscreen }, [offscreen])
 
 const UploadView: React.FC<Props> = props => {
   const { classes } = props
@@ -76,28 +106,12 @@ const UploadView: React.FC<Props> = props => {
     const file = e.target.files[0]
     const reader = new FileReader()
     setLoading(true)
-    reader.onload = () => {
-      const result = reader.result as ArrayBuffer
-      const orientaiton = getOrientation(result)
-      if (orientaiton === 0 || orientaiton === 1) {
-        // 変換不要
-        const data = arrayBufferToDataURL(result)
-        setPreviewSrc(data)
-      } else {
-        const img = new Image()
-        img.src = arrayBufferToDataURL(result)
-        img.onload = () => {
-          const canvas = createTransformedCanvas(orientaiton, img)
-          if (!canvas) {
-            return reader.abort()
-          }
-          // workerに通知
-          // worker.postMessage(
-          //   JSON.stringify({ evt: "doTransformToJpeg", canvas })
-          // )
-          const newImg = canvas.toDataURL("image/jpeg")
-          setPreviewSrc(newImg)
-        }
+    reader.onload = async () => {
+      try {
+        const dataUrl = await generateImg(reader)
+        setPreviewSrc(dataUrl)
+      } catch (error) {
+        reader.abort()
       }
     }
     reader.onerror = () => {

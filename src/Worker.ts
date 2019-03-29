@@ -7,3 +7,7 @@ console.log("Hello World")
 
 // // Respond to message from parent thread
 // ctx.addEventListener("message", event => console.log(event))
+
+ctx.addEventListener("message", e => {
+  console.log(e.data)
+})

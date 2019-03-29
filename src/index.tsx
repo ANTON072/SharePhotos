@@ -6,7 +6,6 @@ import "firebase/auth"
 import "firebase/firestore"
 import "firebase/functions"
 import "firebase/storage"
-import Worker from "worker-loader!./Worker"
 
 firebase.initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -18,10 +17,3 @@ firebase.initializeApp({
 })
 
 ReactDOM.render(<App />, document.getElementById("root"))
-
-const worker = new Worker()
-
-// worker.postMessage({ a: 1 })
-// worker.onmessage = event => {}
-
-// worker.addEventListener("message", event => {})
