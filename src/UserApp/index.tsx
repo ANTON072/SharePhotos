@@ -1,16 +1,17 @@
 import React, { Fragment, useState } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
-import { Typography } from "@material-ui/core"
-import UploadButton from "./UploadButton"
-import Preview from "./Preview"
+import { Typography, Tabs, Tab, AppBar } from "@material-ui/core"
 import getOrientation from "../helpers/getOrientation"
+import UploadView from "./UploadView"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
     root: {
       width: "100%",
       maxWidth: "750px",
-      margin: "0 auto",
+      margin: "0 auto"
+    },
+    title: {
       padding: `${spacing.unit * 2}px`
     }
   })
@@ -18,6 +19,7 @@ const styles = ({ spacing }: Theme) =>
 interface Props {
   classes: {
     root: string
+    title: string
   }
 }
 
@@ -129,21 +131,16 @@ const UserApp: React.FC<Props> = props => {
   return (
     <Fragment>
       <div className={classes.root}>
-        <Typography component="h1" variant="headline" gutterBottom>
+        <Typography component="h1" variant="headline" className={classes.title}>
           Share Photos
         </Typography>
-        {!!!previewSrc && (
-          <UploadButton onChangeFile={handleChangeFile} loading={loading} />
-        )}
-        {!!previewSrc && (
-          <Preview
-            previewSrc={previewSrc}
-            onImgLoaded={onImgLoaded}
-            onCancel={() => {
-              setPreviewSrc(null)
-            }}
-          />
-        )}
+        <AppBar position="static">
+          <Tabs value={0}>
+            <Tab label="Upload A Photo" />
+            <Tab label="My Photos" />
+          </Tabs>
+        </AppBar>
+        <UploadView />
       </div>
     </Fragment>
   )
