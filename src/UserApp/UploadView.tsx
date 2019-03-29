@@ -27,16 +27,12 @@ const styles = ({ spacing, palette }: Theme) => {
       }
     },
     previewImg: {
+      objectFit: "contain",
+      width: "100%",
+      height: "100%",
       position: "absolute",
       top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      width: "auto",
-      height: "auto",
-      maxWidth: "100%",
-      minWidth: "100%",
-      margin: "auto"
+      left: 0
     }
   })
 }
@@ -109,6 +105,7 @@ const UploadView: React.FC<Props> = props => {
     if (!e.target || !e.target.files) {
       return
     }
+    console.log(e.target.files)
     const file = e.target.files[0]
     const reader = new FileReader()
     setLoading(true)
@@ -144,13 +141,7 @@ const UploadView: React.FC<Props> = props => {
         )}
         {loading && <PhotoLoading />}
       </div>
-      {!!previewSrc && (
-        <PreviewApplyButtons
-          onCancel={() => {
-            setPreviewSrc(null)
-          }}
-        />
-      )}
+      {!!previewSrc && <PreviewApplyButtons onChangeFile={handleChangeFile} />}
     </div>
   )
 }

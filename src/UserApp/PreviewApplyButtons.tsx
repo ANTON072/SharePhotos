@@ -1,6 +1,7 @@
 import React from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
 import { Grid, Button } from "@material-ui/core"
+import { Icon } from "@material-ui/core"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -13,11 +14,11 @@ interface Props {
   classes: {
     root: string
   }
-  onCancel: () => void
+  onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const PreviewApplyButtons: React.FC<Props> = props => {
-  const { classes, onCancel } = props
+  const { classes, onReset, onChangeFile } = props
 
   return (
     <div className={classes.root}>
@@ -28,8 +29,14 @@ const PreviewApplyButtons: React.FC<Props> = props => {
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button variant="contained" onClick={onCancel} fullWidth>
-            Cancel
+          <Button component="label" variant="contained" fullWidth>
+            <Icon>camera_alt</Icon>
+            <input
+              type="file"
+              style={{ display: "none" }}
+              accept="image/*"
+              onChange={onChangeFile}
+            />
           </Button>
         </Grid>
       </Grid>
