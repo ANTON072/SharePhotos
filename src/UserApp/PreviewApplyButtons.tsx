@@ -18,7 +18,7 @@ interface Props {
 }
 
 const PreviewApplyButtons: React.FC<Props> = props => {
-  const { classes, onReset, onChangeFile } = props
+  const { classes, onChangeFile } = props
 
   return (
     <div className={classes.root}>
