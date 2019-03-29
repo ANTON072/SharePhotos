@@ -1,10 +1,13 @@
-import React, { useState } from "react"
+import React, { useState, Fragment } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
 import getOrientation from "../helpers/getOrientation"
 import TakePhoto from "./TakePhoto"
 import PhotoLoading from "./PhotoLoading"
 import PreviewApplyButtons from "./PreviewApplyButtons"
 import Worker from "worker-loader!../Worker"
+import { Snackbar } from "@material-ui/core"
+import Notification from "../common/Notification"
+import { Variant } from "../types"
 
 const worker = new Worker()
 
@@ -78,6 +81,11 @@ const UploadView: React.FC<Props> = props => {
   const [loading, setLoading] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [notification, setNotification] = useState<{
+    variant: Variant
+    message: string
+  }>({ variant: "success", message: "" })
+  const [showNotification, setShowNotification] = useState(false)
 
   if (!mounted) {
     worker.onmessage = e => {
@@ -90,7 +98,7 @@ const UploadView: React.FC<Props> = props => {
         }
         case "onErrorCreatedNewImage": {
           setPreviewSrc(null)
-          console.error("ファイルの読み込みに失敗しました")
+          showError("ファイルの読み込みに失敗しました")
           break
         }
         default: {
@@ -101,11 +109,18 @@ const UploadView: React.FC<Props> = props => {
     setMounted(true)
   }
 
+  function showError(message: string) {
+    setNotification({
+      variant: "error",
+      message
+    })
+    setShowNotification(true)
+  }
+
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target || !e.target.files) {
       return
     }
-    console.log(e.target.files)
     const file = e.target.files[0]
     const reader = new FileReader()
     setLoading(true)
@@ -121,28 +136,45 @@ const UploadView: React.FC<Props> = props => {
       reader.abort()
     }
     reader.onabort = () => {
-      console.error("ファイルの読み込みに失敗しました")
+      showError("ファイルの読み込みに失敗しました")
     }
     reader.readAsArrayBuffer(file)
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.photo}>
-        {!!!previewSrc && <TakePhoto onChangeFile={handleChangeFile} />}
+    <Fragment>
+      <div className={classes.root}>
+        <div className={classes.photo}>
+          {!!!previewSrc && <TakePhoto onChangeFile={handleChangeFile} />}
+          {!!previewSrc && (
+            <img
+              className={classes.previewImg}
+              src={previewSrc}
+              onLoad={() => {
+                setLoading(false)
+              }}
+            />
+          )}
+          {loading && <PhotoLoading />}
+        </div>
         {!!previewSrc && (
-          <img
-            className={classes.previewImg}
-            src={previewSrc}
-            onLoad={() => {
-              setLoading(false)
-            }}
-          />
+          <PreviewApplyButtons onChangeFile={handleChangeFile} />
         )}
-        {loading && <PhotoLoading />}
       </div>
-      {!!previewSrc && <PreviewApplyButtons onChangeFile={handleChangeFile} />}
-    </div>
+      <Snackbar
+        open={showNotification}
+        onClose={() => setShowNotification(false)}
+        autoHideDuration={5000}
+      >
+        <Notification
+          message={notification.message}
+          variant={notification.variant}
+          onClose={() => {
+            setShowNotification(false)
+          }}
+        />
+      </Snackbar>
+    </Fragment>
   )
 }
 
