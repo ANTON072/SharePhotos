@@ -85,8 +85,22 @@ const UploadView: React.FC<Props> = props => {
 
   if (!mounted) {
     worker.onmessage = e => {
-      const imgUrl = window.URL.createObjectURL(e.data.blob)
-      setPreviewSrc(imgUrl)
+      const { msg } = e.data
+      switch (msg) {
+        case "onSuccessCreatedNewImage": {
+          const imgUrl = window.URL.createObjectURL(e.data.blob)
+          setPreviewSrc(imgUrl)
+          break
+        }
+        case "onErrorCreatedNewImage": {
+          setPreviewSrc(null)
+          console.error("ファイルの読み込みに失敗しました")
+          break
+        }
+        default: {
+          break
+        }
+      }
     }
     setMounted(true)
   }

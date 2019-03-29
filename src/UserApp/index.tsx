@@ -1,8 +1,6 @@
 import React, { Fragment, useState } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
 import { Typography, Tabs, Tab, AppBar } from "@material-ui/core"
-import UploadButton from "./UploadButton"
-import Preview from "./Preview"
 import getOrientation from "../helpers/getOrientation"
 import UploadView from "./UploadView"
 

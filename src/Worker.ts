@@ -16,8 +16,13 @@ worker.addEventListener("message", async e => {
     size.width = bitmap.height
     size.height = bitmap.width
   }
-  const canvas = new OffscreenCanvas(size.width, size.height)
+  const canvas: OffscreenCanvas = new OffscreenCanvas(size.width, size.height)
   const ctx = canvas.getContext("2d")
+
+  if (!ctx) {
+    worker.postMessage({ msg: "onErrorCreatedNewImage" })
+    return
+  }
 
   switch (orientation) {
     case 2: {
@@ -51,5 +56,5 @@ worker.addEventListener("message", async e => {
   }
   ctx.drawImage(bitmap, 0, 0)
   const newBlob = await canvas.convertToBlob({ type: "image/jpeg" })
-  worker.postMessage({ blob: newBlob })
+  worker.postMessage({ msg: "onSuccessCreatedNewImage", blob: newBlob })
 })
