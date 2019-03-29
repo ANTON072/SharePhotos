@@ -1,12 +1,12 @@
 import React, { useState } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
 import getOrientation from "../helpers/getOrientation"
-import createTransformedCanvas from "../helpers/createTransformedCanvas"
 import TakePhoto from "./TakePhoto"
 import PhotoLoading from "./PhotoLoading"
 import PreviewApplyButtons from "./PreviewApplyButtons"
 import Worker from "worker-loader!../Worker"
-import ReactLoading from "react-loading"
+
+const worker = new Worker()
 
 const styles = ({ spacing, palette }: Theme) => {
   return createStyles({
@@ -55,35 +55,26 @@ const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
 }
 
 const generateImg = (reader: FileReader) => {
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<string>(async (resolve, reject) => {
     const result = reader.result as ArrayBuffer
-    const orientaiton = getOrientation(result)
-    if (orientaiton === 0 || orientaiton === 1) {
+    const orientation = getOrientation(result) as number
+    const dataUrl = arrayBufferToDataURL(result)
+    if (orientation === 0 || orientation === 1) {
       // 変換不要
-      resolve(arrayBufferToDataURL(result))
+      resolve(dataUrl)
     } else {
-      const img = new Image()
-      img.src = arrayBufferToDataURL(result)
-      img.onload = () => {
-        const canvas = createTransformedCanvas(orientaiton, img)
-        if (!canvas) {
-          return reader.abort()
-        }
-        // workerに通知
-        const dataUrl = canvas.toDataURL("image/jpeg")
-        resolve(dataUrl)
-      }
-      img.onerror = () => {
-        reject()
-      }
+      const blob = new Blob([result], { type: "image/jpeg" })
+      const bitmap = await window.createImageBitmap(blob)
+      worker.postMessage(
+        {
+          bitmap,
+          orientation
+        },
+        [bitmap]
+      )
     }
   })
 }
-
-const worker = new Worker()
-// const canvas = document.createElement("canvas") as any
-// const offscreen = canvas.transferControlToOffscreen()
-// worker.postMessage({ canvas: offscreen }, [offscreen])
 
 const UploadView: React.FC<Props> = props => {
   const { classes } = props
@@ -93,9 +84,10 @@ const UploadView: React.FC<Props> = props => {
   const [mounted, setMounted] = useState(false)
 
   if (!mounted) {
-    // worker.onmessage = e => {
-    //   console.info(e.data)
-    // }
+    worker.onmessage = e => {
+      const imgUrl = window.URL.createObjectURL(e.data.blob)
+      setPreviewSrc(imgUrl)
+    }
     setMounted(true)
   }
 
@@ -138,7 +130,6 @@ const UploadView: React.FC<Props> = props => {
         )}
         {loading && <PhotoLoading />}
       </div>
-      {loading && <PhotoLoading />}
       {!!previewSrc && (
         <PreviewApplyButtons
           onCancel={() => {
