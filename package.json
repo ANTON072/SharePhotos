@@ -45,6 +45,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "build": "NODE_ENV=production webpack",
-    "lint": "tslint src/**.ts src/**.tsx"
+    "lint": "tslint src/**.ts src/**.tsx",
+    "deploy": "firebase deploy --only hosting"
   }
 }
