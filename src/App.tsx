@@ -20,8 +20,8 @@ const App: React.FC = () => {
         <Suspense fallback={<Fragment />}>
           <Switch>
             <Route path="/" exact component={ViwerApp} />
-            <Route path="/user" exact component={UserApp} />
-            <Route path="/admin" exact component={AdminApp} />
+            <Route path="/user" component={UserApp} />
+            <Route path="/admin" component={AdminApp} />
           </Switch>
         </Suspense>
       </BrowserRouter>

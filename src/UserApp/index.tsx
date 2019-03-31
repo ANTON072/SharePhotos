@@ -1,7 +1,14 @@
-import React, { Fragment } from "react"
+import React, { Fragment, useState } from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
 import { Typography, Tabs, Tab, AppBar } from "@material-ui/core"
+import {
+  Switch,
+  Route,
+  withRouter,
+  RouteComponentProps
+} from "react-router-dom"
 import UploadView from "./UploadView"
+import MyPhotosView from "./MyPhotosView"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -15,71 +22,26 @@ const styles = ({ spacing }: Theme) =>
     }
   })
 
-interface Props {
+interface Props extends RouteComponentProps {
   classes: {
     root: string
     title: string
   }
 }
 
-const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
-  const blob = new Blob([arrBuf], { type: "image/jpeg" })
-  return window.URL.createObjectURL(blob)
-}
-
-const createTransformedCanvas = (
-  orientation: number,
-  img: HTMLImageElement
-) => {
-  const canvas = document.createElement("canvas")
-  const ctx = canvas.getContext("2d")
-  if (!ctx) {
-    return undefined
-  }
-  if ([5, 6, 7, 8].indexOf(orientation) > -1) {
-    // 縦横逆
-    canvas.width = img.height
-    canvas.height = img.width
-  } else {
-    canvas.width = img.width
-    canvas.height = img.height
-  }
-  switch (orientation) {
-    case 2: {
-      ctx.transform(-1, 0, 0, 1, img.width, 0)
-      break
-    }
-    case 3: {
-      ctx.transform(-1, 0, 0, -1, img.width, img.height)
-      break
-    }
-    case 4: {
-      ctx.transform(1, 0, 0, -1, 0, img.height)
-      break
-    }
-    case 5: {
-      ctx.transform(0, 1, 1, 0, 0, 0)
-      break
-    }
-    case 6: {
-      ctx.transform(0, 1, -1, 0, img.height, 0)
-      break
-    }
-    case 7: {
-      ctx.transform(0, -1, -1, 0, img.height, img.width)
-      break
-    }
-    case 8: {
-      ctx.transform(0, -1, 1, 0, 0, img.width)
-      break
-    }
-  }
-  ctx.drawImage(img, 0, 0)
-  return canvas
-}
-
 const UserApp: React.FC<Props> = props => {
-  const { classes } = props
+  const { classes, history } = props
+  const [mounted, setMounted] = useState(false)
+  const [pageState, setPageState] = useState(history.location.pathname)
+
+  if (!mounted) {
+    setMounted(true)
+  }
+
+  const handleChangeTab = (path: string) => {
+    setPageState(path)
+    history.push(path)
+  }
 
   return (
     <Fragment>
@@ -88,15 +50,18 @@ const UserApp: React.FC<Props> = props => {
           Share Photos
         </Typography>
         <AppBar position="static">
-          <Tabs value={0}>
-            <Tab label="Upload A Photo" />
-            <Tab label="My Photos" />
+          <Tabs value={pageState} onChange={(e, path) => handleChangeTab(path)}>
+            <Tab label="Upload A Photo" value="/user" />
+            <Tab label="My Photos" value="/user/photos" />
           </Tabs>
         </AppBar>
-        <UploadView />
+        <Switch>
+          <Route exact path="/user" component={UploadView} />
+          <Route exact path="/user/photos" component={MyPhotosView} />
+        </Switch>
       </div>
     </Fragment>
   )
 }
 
-export default withStyles(styles)(UserApp)
+export default withRouter(withStyles(styles)(UserApp))
