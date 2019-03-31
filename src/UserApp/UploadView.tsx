@@ -5,7 +5,6 @@ import TakePhoto from "./TakePhoto"
 import PhotoLoading from "./PhotoLoading"
 import PreviewApplyButtons from "./PreviewApplyButtons"
 import Worker from "worker-loader!../Worker"
-import { Snackbar } from "@material-ui/core"
 import Notification from "../common/Notification"
 import { Variant } from "../types"
 
@@ -161,19 +160,14 @@ const UploadView: React.FC<Props> = props => {
           <PreviewApplyButtons onChangeFile={handleChangeFile} />
         )}
       </div>
-      <Snackbar
+      <Notification
         open={showNotification}
-        onClose={() => setShowNotification(false)}
-        autoHideDuration={5000}
-      >
-        <Notification
-          message={notification.message}
-          variant={notification.variant}
-          onClose={() => {
-            setShowNotification(false)
-          }}
-        />
-      </Snackbar>
+        message={notification.message}
+        variant={notification.variant}
+        onCloseNotice={() => {
+          setShowNotification(false)
+        }}
+      />
     </Fragment>
   )
 }

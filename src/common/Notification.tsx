@@ -1,9 +1,10 @@
 import React from "react"
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles"
-import { SnackbarContent, IconButton, Icon } from "@material-ui/core"
+import { Snackbar, Icon } from "@material-ui/core"
 import { green, amber } from "@material-ui/core/colors"
 import classNames from "classnames"
 import { Variant } from "../types"
+import { SnackbarProps } from "@material-ui/core/Snackbar"
 
 interface Props {
   classes: {
@@ -18,22 +19,22 @@ interface Props {
   }
   message: string
   variant: Variant
-  onClose: () => void
+  onCloseNotice: () => void
 }
 
 const styles = ({ spacing, palette }: Theme) => {
   return createStyles({
     success: {
-      backgroundColor: green[600]
+      color: green[600]
     },
     error: {
-      backgroundColor: palette.error.dark
+      color: palette.error.dark
     },
     info: {
-      backgroundColor: palette.primary.dark
+      color: palette.grey[50]
     },
     warning: {
-      backgroundColor: amber[700]
+      color: amber[700]
     },
     icon: {
       fontSize: 20
@@ -45,7 +46,7 @@ const styles = ({ spacing, palette }: Theme) => {
     message: {
       display: "flex",
       alignItems: "center",
-      fontSize: "12px"
+      fontSize: "13px"
     },
     margin: {
       margin: spacing.unit
@@ -60,21 +61,30 @@ const variantIcon = {
   info: "info"
 }
 
-const Notification: React.FC<Props> = props => {
-  const { classes, message, variant, onClose } = props
+const Notification: React.FC<Props & SnackbarProps> = props => {
+  const { classes, message, variant, onCloseNotice, ...other } = props
 
   return (
-    <SnackbarContent
-      onClick={onClose}
-      className={classNames(classes[variant], classes.margin)}
+    <Snackbar
+      onClick={onCloseNotice}
+      className={classes.margin}
+      onClose={onCloseNotice}
+      autoHideDuration={5000}
       message={
         <span className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)}>
+          <Icon
+            className={classNames(
+              classes[variant],
+              classes.icon,
+              classes.iconVariant
+            )}
+          >
             {variantIcon[variant]}
           </Icon>
           {message}
         </span>
       }
+      {...other}
     />
   )
 }
