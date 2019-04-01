@@ -39,12 +39,25 @@ const styles = ({ spacing, palette }: Theme) => {
   })
 }
 
+type uploadNotificationProps = {
+  variant: Variant
+  message: string
+}
+
 interface Props {
   classes: {
     root: string
     photo: string
     previewImg: string
   }
+  previewSrc: string | null
+  uploadLoading: boolean
+  uploadNotification: boolean
+  uploadNotificationMsg: uploadNotificationProps
+  onSetPreviewSrc: (arg: string | null) => void
+  onSetUploadLoading: (arg: boolean) => void
+  onSetUploadNotification: (arg: boolean) => void
+  onSetUploadNotificationMsg: (arg: uploadNotificationProps) => void
 }
 
 const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
@@ -75,16 +88,21 @@ const generateImg = (reader: FileReader) => {
 }
 
 const UploadView: React.FC<Props> = props => {
-  const { classes } = props
+  const {
+    classes,
+    previewSrc,
+    uploadLoading,
+    uploadNotification,
+    uploadNotificationMsg,
+    onSetPreviewSrc,
+    onSetUploadLoading,
+    onSetUploadNotification,
+    onSetUploadNotificationMsg
+  } = props
 
-  const [loading, setLoading] = useState(false)
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+  console.log("uploadLoading:", uploadLoading)
+
   const [mounted, setMounted] = useState(false)
-  const [notification, setNotification] = useState<{
-    variant: Variant
-    message: string
-  }>({ variant: "success", message: "" })
-  const [showNotification, setShowNotification] = useState(false)
 
   if (!mounted) {
     worker.onmessage = e => {
@@ -92,11 +110,12 @@ const UploadView: React.FC<Props> = props => {
       switch (msg) {
         case "onSuccessCreatedNewImage": {
           const imgUrl = window.URL.createObjectURL(e.data.blob)
-          setPreviewSrc(imgUrl)
+          onSetPreviewSrc(imgUrl)
           break
         }
         case "onErrorCreatedNewImage": {
-          setPreviewSrc(null)
+          onSetPreviewSrc(null)
+          onSetUploadNotification(false)
           showError("ファイルの読み込みに失敗しました")
           break
         }
@@ -109,11 +128,11 @@ const UploadView: React.FC<Props> = props => {
   }
 
   function showError(message: string) {
-    setNotification({
+    onSetUploadNotificationMsg({
       variant: "error",
       message
     })
-    setShowNotification(true)
+    onSetUploadNotification(true)
   }
 
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -122,11 +141,11 @@ const UploadView: React.FC<Props> = props => {
     }
     const file = e.target.files[0]
     const reader = new FileReader()
-    setLoading(true)
+    onSetUploadLoading(true)
     reader.onload = async () => {
       try {
         const dataUrl = await generateImg(reader)
-        setPreviewSrc(dataUrl)
+        onSetPreviewSrc(dataUrl)
       } catch (error) {
         reader.abort()
       }
@@ -144,28 +163,28 @@ const UploadView: React.FC<Props> = props => {
     <Fragment>
       <div className={classes.root}>
         <div className={classes.photo}>
-          {!!!loading && <TakePhoto onChangeFile={handleChangeFile} />}
+          {!!!uploadLoading && <TakePhoto onChangeFile={handleChangeFile} />}
           {!!previewSrc && (
             <img
               className={classes.previewImg}
               src={previewSrc}
               onLoad={() => {
-                setLoading(false)
+                onSetUploadLoading(false)
               }}
             />
           )}
-          {loading && <PhotoLoading />}
+          {uploadLoading && <PhotoLoading />}
         </div>
         {!!previewSrc && (
           <PreviewApplyButtons onChangeFile={handleChangeFile} />
         )}
       </div>
       <Notification
-        open={showNotification}
-        message={notification.message}
-        variant={notification.variant}
+        open={uploadNotification}
+        message={uploadNotificationMsg.message}
+        variant={uploadNotificationMsg.variant}
         onCloseNotice={() => {
-          setShowNotification(false)
+          onSetUploadNotification(false)
         }}
       />
     </Fragment>

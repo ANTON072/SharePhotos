@@ -9,6 +9,7 @@ import {
 } from "react-router-dom"
 import UploadView from "./UploadView"
 import MyPhotosView from "./MyPhotosView"
+import { Variant } from "../types"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -33,6 +34,13 @@ const UserApp: React.FC<Props> = props => {
   const { classes, history } = props
   const [mounted, setMounted] = useState(false)
   const [pageState, setPageState] = useState(history.location.pathname)
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+  const [uploadLoading, setUploadLoading] = useState(false)
+  const [uploadNotificationMsg, setUploadNotificationMsg] = useState<{
+    variant: Variant
+    message: string
+  }>({ variant: "success", message: "" })
+  const [uploadNotification, setUploadNotification] = useState(false)
 
   if (!mounted) {
     setMounted(true)
@@ -56,7 +64,22 @@ const UserApp: React.FC<Props> = props => {
           </Tabs>
         </AppBar>
         <Switch>
-          <Route exact path="/user" component={UploadView} />
+          <Route
+            exact
+            path="/user"
+            component={() => (
+              <UploadView
+                previewSrc={previewSrc}
+                uploadLoading={uploadLoading}
+                uploadNotification={uploadNotification}
+                uploadNotificationMsg={uploadNotificationMsg}
+                onSetPreviewSrc={setPreviewSrc}
+                onSetUploadLoading={setUploadLoading}
+                onSetUploadNotification={setUploadNotification}
+                onSetUploadNotificationMsg={setUploadNotificationMsg}
+              />
+            )}
+          />
           <Route exact path="/user/photos" component={MyPhotosView} />
         </Switch>
       </div>

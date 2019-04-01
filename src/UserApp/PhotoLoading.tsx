@@ -13,7 +13,7 @@ const styles = () =>
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 1,
+      zIndex: 10,
       "&:before": {
         content: '""',
         position: "absolute",
