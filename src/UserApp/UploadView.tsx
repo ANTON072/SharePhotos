@@ -144,7 +144,7 @@ const UploadView: React.FC<Props> = props => {
     <Fragment>
       <div className={classes.root}>
         <div className={classes.photo}>
-          {!!!previewSrc && <TakePhoto onChangeFile={handleChangeFile} />}
+          {!!!loading && <TakePhoto onChangeFile={handleChangeFile} />}
           {!!previewSrc && (
             <img
               className={classes.previewImg}
