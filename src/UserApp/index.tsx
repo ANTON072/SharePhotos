@@ -9,7 +9,7 @@ import {
 } from "react-router-dom"
 import UploadView from "./UploadView"
 import MyPhotosView from "./MyPhotosView"
-import { RouterProps } from "react-router"
+import { Variant } from "../types"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -36,6 +36,14 @@ const UserApp: React.FC<Props> = props => {
   const [pageState, setPageState] = useState(history.location.pathname)
   const [uploadLoading, setUploadLoading] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+  const [uploadNotice, setUploadNotice] = useState(false)
+  const [uploadNoticeMsg, setUploadNoticeMsg] = useState<{
+    variant: Variant
+    message: string
+  }>({
+    variant: "success",
+    message: ""
+  })
 
   if (!mounted) {
     setMounted(true)
@@ -68,6 +76,10 @@ const UserApp: React.FC<Props> = props => {
                 onSetUploadLoading={setUploadLoading}
                 previewSrc={previewSrc}
                 onSetPreviewSrc={setPreviewSrc}
+                uploadNotice={uploadNotice}
+                onSetUploadNotice={setUploadNotice}
+                uploadNoticeMsg={uploadNoticeMsg}
+                onSetUploadNoticeMsg={setUploadNoticeMsg}
                 {...routerProps}
               />
             )}

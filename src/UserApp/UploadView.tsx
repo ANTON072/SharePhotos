@@ -50,6 +50,13 @@ interface Props {
   onSetUploadLoading: (arg: boolean) => void
   previewSrc: string | null
   onSetPreviewSrc: (arg: string | null) => void
+  uploadNotice: boolean
+  onSetUploadNotice: (arg: boolean) => void
+  uploadNoticeMsg: {
+    message: string
+    variant: Variant
+  }
+  onSetUploadNoticeMsg: (arg: { message: string; variant: Variant }) => void
 }
 
 const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
@@ -85,15 +92,14 @@ const UploadView: React.FC<Props & RouterProps> = props => {
     uploadLoading,
     onSetUploadLoading,
     previewSrc,
-    onSetPreviewSrc
+    uploadNotice,
+    uploadNoticeMsg,
+    onSetPreviewSrc,
+    onSetUploadNotice,
+    onSetUploadNoticeMsg
   } = props
 
   const [mounted, setMounted] = useState(false)
-  const [notification, setNotification] = useState<{
-    variant: Variant
-    message: string
-  }>({ variant: "success", message: "" })
-  const [showNotification, setShowNotification] = useState(false)
 
   if (!mounted) {
     worker.onmessage = e => {
@@ -119,11 +125,11 @@ const UploadView: React.FC<Props & RouterProps> = props => {
   }
 
   function showError(message: string) {
-    setNotification({
+    onSetUploadNoticeMsg({
       variant: "error",
       message
     })
-    setShowNotification(true)
+    onSetUploadNotice(true)
     onSetUploadLoading(false)
   }
 
@@ -172,11 +178,11 @@ const UploadView: React.FC<Props & RouterProps> = props => {
         )}
       </div>
       <Notification
-        open={showNotification}
-        message={notification.message}
-        variant={notification.variant}
+        open={uploadNotice}
+        message={uploadNoticeMsg.message}
+        variant={uploadNoticeMsg.variant}
         onCloseNotice={() => {
-          setShowNotification(false)
+          onSetUploadNotice(false)
         }}
       />
     </Fragment>
