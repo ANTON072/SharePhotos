@@ -35,6 +35,7 @@ const UserApp: React.FC<Props> = props => {
   const [mounted, setMounted] = useState(false)
   const [pageState, setPageState] = useState(history.location.pathname)
   const [uploadLoading, setUploadLoading] = useState(false)
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 
   if (!mounted) {
     setMounted(true)
@@ -65,6 +66,8 @@ const UserApp: React.FC<Props> = props => {
               <UploadView
                 uploadLoading={uploadLoading}
                 onSetUploadLoading={setUploadLoading}
+                previewSrc={previewSrc}
+                onSetPreviewSrc={setPreviewSrc}
                 {...routerProps}
               />
             )}

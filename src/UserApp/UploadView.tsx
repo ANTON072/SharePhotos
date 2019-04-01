@@ -48,6 +48,8 @@ interface Props {
   }
   uploadLoading: boolean
   onSetUploadLoading: (arg: boolean) => void
+  previewSrc: string | null
+  onSetPreviewSrc: (arg: string | null) => void
 }
 
 const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
@@ -78,9 +80,14 @@ const generateImg = (reader: FileReader) => {
 }
 
 const UploadView: React.FC<Props & RouterProps> = props => {
-  const { classes, uploadLoading, onSetUploadLoading } = props
+  const {
+    classes,
+    uploadLoading,
+    onSetUploadLoading,
+    previewSrc,
+    onSetPreviewSrc
+  } = props
 
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const [notification, setNotification] = useState<{
     variant: Variant
@@ -94,12 +101,13 @@ const UploadView: React.FC<Props & RouterProps> = props => {
       switch (msg) {
         case "onSuccessCreatedNewImage": {
           const imgUrl = window.URL.createObjectURL(e.data.blob)
-          setPreviewSrc(imgUrl)
+          onSetPreviewSrc(imgUrl)
           break
         }
         case "onErrorCreatedNewImage": {
-          setPreviewSrc(null)
+          onSetPreviewSrc(null)
           showError("ファイルの読み込みに失敗しました")
+          onSetUploadLoading(false)
           break
         }
         default: {
@@ -129,7 +137,7 @@ const UploadView: React.FC<Props & RouterProps> = props => {
     reader.onload = async () => {
       try {
         const dataUrl = await generateImg(reader)
-        setPreviewSrc(dataUrl)
+        onSetPreviewSrc(dataUrl)
       } catch (error) {
         reader.abort()
       }
