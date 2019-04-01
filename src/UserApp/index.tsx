@@ -9,6 +9,7 @@ import {
 } from "react-router-dom"
 import UploadView from "./UploadView"
 import MyPhotosView from "./MyPhotosView"
+import { RouterProps } from "react-router"
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -33,6 +34,7 @@ const UserApp: React.FC<Props> = props => {
   const { classes, history } = props
   const [mounted, setMounted] = useState(false)
   const [pageState, setPageState] = useState(history.location.pathname)
+  const [uploadLoading, setUploadLoading] = useState(false)
 
   if (!mounted) {
     setMounted(true)
@@ -56,7 +58,17 @@ const UserApp: React.FC<Props> = props => {
           </Tabs>
         </AppBar>
         <Switch>
-          <Route exact path="/user" component={UploadView} />
+          <Route
+            exact
+            path="/user"
+            render={routerProps => (
+              <UploadView
+                uploadLoading={uploadLoading}
+                onSetUploadLoading={setUploadLoading}
+                {...routerProps}
+              />
+            )}
+          />
           <Route exact path="/user/photos" component={MyPhotosView} />
         </Switch>
       </div>

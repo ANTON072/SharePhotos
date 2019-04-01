@@ -7,6 +7,7 @@ import PreviewApplyButtons from "./PreviewApplyButtons"
 import Worker from "worker-loader!../Worker"
 import Notification from "../common/Notification"
 import { Variant } from "../types"
+import { RouterProps } from "react-router"
 
 const worker = new Worker()
 
@@ -45,6 +46,8 @@ interface Props {
     photo: string
     previewImg: string
   }
+  uploadLoading: boolean
+  onSetUploadLoading: (arg: boolean) => void
 }
 
 const arrayBufferToDataURL = (arrBuf: ArrayBuffer) => {
@@ -74,10 +77,9 @@ const generateImg = (reader: FileReader) => {
   })
 }
 
-const UploadView: React.FC<Props> = props => {
-  const { classes } = props
+const UploadView: React.FC<Props & RouterProps> = props => {
+  const { classes, uploadLoading, onSetUploadLoading } = props
 
-  const [loading, setLoading] = useState(false)
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const [notification, setNotification] = useState<{
@@ -114,6 +116,7 @@ const UploadView: React.FC<Props> = props => {
       message
     })
     setShowNotification(true)
+    onSetUploadLoading(false)
   }
 
   function handleChangeFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -122,7 +125,7 @@ const UploadView: React.FC<Props> = props => {
     }
     const file = e.target.files[0]
     const reader = new FileReader()
-    setLoading(true)
+    onSetUploadLoading(true)
     reader.onload = async () => {
       try {
         const dataUrl = await generateImg(reader)
@@ -144,17 +147,17 @@ const UploadView: React.FC<Props> = props => {
     <Fragment>
       <div className={classes.root}>
         <div className={classes.photo}>
-          {!!!loading && <TakePhoto onChangeFile={handleChangeFile} />}
+          {!!!uploadLoading && <TakePhoto onChangeFile={handleChangeFile} />}
           {!!previewSrc && (
             <img
               className={classes.previewImg}
               src={previewSrc}
               onLoad={() => {
-                setLoading(false)
+                onSetUploadLoading(false)
               }}
             />
           )}
-          {loading && <PhotoLoading />}
+          {uploadLoading && <PhotoLoading />}
         </div>
         {!!previewSrc && (
           <PreviewApplyButtons onChangeFile={handleChangeFile} />
